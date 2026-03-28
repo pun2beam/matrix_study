@@ -31,4 +31,4 @@ python3 -m http.server 8000
 2×2行列の理解支援Webアプリの仕様書を `SPECIFICATION.md` に整理しています。
 
 デモ:
- https://github.com/pun2beam/matrix_study/
+ https://pun2beam.github.io/matrix_study/
