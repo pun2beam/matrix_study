@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2×2行列ビジュアライザ</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>2×2行列の理解支援アプリ</h1>
+      <p>入力・ドラッグ操作で列ベクトル、固有ベクトル、逆行列を可視化します。</p>
+    </header>
+
+    <main class="layout">
+      <section class="panel controls" aria-label="設定パネル">
+        <h2>行列入力</h2>
+        <form id="matrix-form" class="matrix-form" autocomplete="off">
+          <label>a <input id="input-a" inputmode="decimal" value="2" /></label>
+          <label>b <input id="input-b" inputmode="decimal" value="1" /></label>
+          <label>c <input id="input-c" inputmode="decimal" value="1" /></label>
+          <label>d <input id="input-d" inputmode="decimal" value="2" /></label>
+        </form>
+        <p id="input-error" class="error" aria-live="polite"></p>
+
+        <div class="preset-buttons">
+          <button type="button" data-preset="default">初期値に戻す</button>
+          <button type="button" data-preset="identity">単位行列にする</button>
+          <button type="button" data-preset="rotation">回転行列の例</button>
+          <button type="button" data-preset="diagonal">対角行列の例</button>
+          <button type="button" data-preset="singular">特異行列の例</button>
+        </div>
+
+        <h2>表示切替</h2>
+        <div class="toggles">
+          <label><input type="checkbox" id="show-cartesian-grid" checked />通常の方眼を表示</label>
+          <label><input type="checkbox" id="show-column-vectors" checked />列ベクトルを表示</label>
+          <label><input type="checkbox" id="show-column-grid" checked />列ベクトル基準の方眼を表示</label>
+          <label><input type="checkbox" id="show-eigen-vectors" checked />固有ベクトルを表示</label>
+          <label><input type="checkbox" id="show-eigen-grid" />固有ベクトル基準の方眼を表示</label>
+          <label><input type="checkbox" id="show-inverse-vectors" checked />逆行列の列ベクトルを表示</label>
+          <label><input type="checkbox" id="show-inverse-grid" />逆行列基準の方眼を表示</label>
+        </div>
+
+        <h2>計算結果</h2>
+        <section class="results" id="results" aria-live="polite"></section>
+
+        <h2>凡例</h2>
+        <ul class="legend">
+          <li><span class="swatch v1"></span> 列ベクトル v1</li>
+          <li><span class="swatch v2"></span> 列ベクトル v2</li>
+          <li><span class="swatch e1"></span> 固有ベクトル e1</li>
+          <li><span class="swatch e2"></span> 固有ベクトル e2</li>
+          <li><span class="swatch i1"></span> 逆行列 inv_v1</li>
+          <li><span class="swatch i2"></span> 逆行列 inv_v2</li>
+        </ul>
+      </section>
+
+      <section class="panel canvas-panel" aria-label="グラフ描画領域">
+        <canvas id="matrix-canvas" width="900" height="700"></canvas>
+        <div id="drag-tooltip" class="drag-tooltip" hidden></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
