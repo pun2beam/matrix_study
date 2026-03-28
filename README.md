@@ -28,3 +28,7 @@ python3 -m http.server 8000
 5. 保存後、表示される公開URLにアクセス
 
 ビルド工程なしで公開されます。
+2×2行列の理解支援Webアプリの仕様書を `SPECIFICATION.md` に整理しています。
+
+デモ:
+ https://github.com/pun2beam/matrix_study/
