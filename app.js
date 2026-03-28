@@ -57,6 +57,8 @@
     column2: { color: "#f97316", label: "v2", dash: [] },
     eigen1: { color: "#8b5cf6", label: "e1", dash: [8, 4] },
     eigen2: { color: "#ec4899", label: "e2", dash: [8, 4] },
+    eigen1Mapped: { color: "#6d28d9", label: "Av1", dash: [] },
+    eigen2Mapped: { color: "#be185d", label: "Av2", dash: [] },
     inv1: { color: "#10b981", label: "inv_v1", dash: [5, 5] },
     inv2: { color: "#eab308", label: "inv_v2", dash: [5, 5] }
   };
@@ -224,6 +226,14 @@
     return { determinant: det, eigen, inverse };
   }
 
+  function getEigenDrawItems(eigen) {
+    if (!eigen.hasRealEigenvalues || eigen.isAllDirectionsEigenvectors) return [];
+    return eigen.vectors.map((v, idx) => {
+      const lambda = eigen.values[Math.min(idx, eigen.values.length - 1)] ?? 0;
+      return { v, lambda, idx };
+    });
+  }
+
   function toScreen(world, view) {
     return {
       x: view.originX + world.x * view.scale,
@@ -255,10 +265,11 @@
       );
     }
 
-    if (computed.eigen.hasRealEigenvalues && !computed.eigen.isAllDirectionsEigenvectors) {
-      for (const v of computed.eigen.vectors) {
-        points.push({ x: v.x * BASE_VECTOR_DRAW_LEN, y: v.y * BASE_VECTOR_DRAW_LEN });
-      }
+    const eigenDrawItems = getEigenDrawItems(computed.eigen);
+    for (const item of eigenDrawItems) {
+      const base = { x: item.v.x * BASE_VECTOR_DRAW_LEN, y: item.v.y * BASE_VECTOR_DRAW_LEN };
+      const mapped = { x: base.x * item.lambda, y: base.y * item.lambda };
+      points.push(base, mapped);
     }
 
     let maxAbs = 2;
@@ -400,7 +411,7 @@
     ctx.stroke();
   }
 
-  function drawVector(world, style, view, withHandle = false) {
+  function drawVector(world, style, view, withHandle = false, labelOverride = null) {
     const origin = toScreen({ x: 0, y: 0 }, view);
     const tip = toScreen(world, view);
     const lengthPx = Math.hypot(tip.x - origin.x, tip.y - origin.y);
@@ -439,11 +450,8 @@
     ctx.setLineDash([]);
     ctx.fillStyle = style.color;
     ctx.font = "12px sans-serif";
-    ctx.fillText(
-      `${style.label} = (${roundNum(world.x)}, ${roundNum(world.y)})`,
-      tip.x + 8,
-      tip.y - 8
-    );
+    const labelText = labelOverride || `${style.label} = (${roundNum(world.x)}, ${roundNum(world.y)})`;
+    ctx.fillText(labelText, tip.x + 8, tip.y - 8);
 
     ctx.restore();
   }
@@ -542,8 +550,27 @@
     }
 
     if (state.ui.showEigenVectors && computed.eigen.hasRealEigenvalues && !computed.eigen.isAllDirectionsEigenvectors) {
-      computed.eigen.vectors.forEach((v, idx) => {
-        drawVector({ x: v.x * BASE_VECTOR_DRAW_LEN, y: v.y * BASE_VECTOR_DRAW_LEN }, idx === 0 ? vectors.eigen1 : vectors.eigen2, view);
+      const eigenDrawItems = getEigenDrawItems(computed.eigen);
+      eigenDrawItems.forEach((item) => {
+        const baseWorld = { x: item.v.x * BASE_VECTOR_DRAW_LEN, y: item.v.y * BASE_VECTOR_DRAW_LEN };
+        const mappedWorld = { x: baseWorld.x * item.lambda, y: baseWorld.y * item.lambda };
+        const eigenStyle = item.idx === 0 ? vectors.eigen1 : vectors.eigen2;
+        const mappedStyle = item.idx === 0 ? vectors.eigen1Mapped : vectors.eigen2Mapped;
+        const signText = item.lambda < 0 ? " (λ<0)" : "";
+        drawVector(
+          baseWorld,
+          eigenStyle,
+          view,
+          false,
+          `${eigenStyle.label}: |λ|=${roundNum(Math.abs(item.lambda))}${signText}`
+        );
+        drawVector(
+          mappedWorld,
+          mappedStyle,
+          view,
+          false,
+          `${mappedStyle.label}=A${eigenStyle.label}: λ=${roundNum(item.lambda)}`
+        );
       });
     }
 
