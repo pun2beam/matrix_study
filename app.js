@@ -473,10 +473,15 @@
   function updateResultPane(computed) {
     const m = state.matrix;
     const det = computed.determinant;
+    const col1 = { x: m.a, y: m.c };
+    const col2 = { x: m.b, y: m.d };
+    const col1Norm = Math.hypot(col1.x, col1.y);
+    const col2Norm = Math.hypot(col2.x, col2.y);
 
     let html = "";
     html += `<div><strong>A</strong> = <code>[[${roundNum(m.a)}, ${roundNum(m.b)}], [${roundNum(m.c)}, ${roundNum(m.d)}]]</code></div>`;
     html += `<div>det(A) = <code>${roundNum(det)}</code></div>`;
+    html += `<div>列ベクトル: <code>v1=(${roundNum(col1.x)}, ${roundNum(col1.y)}), |v1|=${roundNum(col1Norm)} / v2=(${roundNum(col2.x)}, ${roundNum(col2.y)}), |v2|=${roundNum(col2Norm)}</code></div>`;
 
     if (!computed.eigen.hasRealEigenvalues) {
       html += "<div>固有値: 実数固有値なし</div><div>固有ベクトル: 実数固有ベクトルなし</div>";
@@ -488,6 +493,14 @@
       const lTexts = computed.eigen.values.map((v, i) => `λ${i + 1}=${roundNum(v)}`).join(" / ");
       html += `<div>固有値: <code>${lTexts}</code></div>`;
       html += `<div>固有ベクトル(正規化): <code>${vTexts || "なし"}</code></div>`;
+      if (computed.eigen.vectors.length > 0) {
+        const mappedTexts = computed.eigen.vectors.map((v, i) => {
+          const lambda = computed.eigen.values[Math.min(i, computed.eigen.values.length - 1)] ?? 0;
+          const av = { x: v.x * lambda, y: v.y * lambda };
+          return `Ae${i + 1}=(${roundNum(av.x)}, ${roundNum(av.y)}), |e${i + 1}|=${roundNum(Math.hypot(v.x, v.y))}, |Ae${i + 1}|=${roundNum(Math.hypot(av.x, av.y))}`;
+        }).join(" / ");
+        html += `<div>固有方向の座標比較: <code>${mappedTexts}</code></div>`;
+      }
       if (computed.eigen.message) {
         html += `<div>${computed.eigen.message}</div>`;
       }
