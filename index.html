@@ -23,14 +23,6 @@
         </form>
         <p id="input-error" class="error" aria-live="polite"></p>
 
-        <div class="preset-buttons">
-          <button type="button" data-preset="default">初期値に戻す</button>
-          <button type="button" data-preset="identity">単位行列にする</button>
-          <button type="button" data-preset="rotation">回転行列の例</button>
-          <button type="button" data-preset="diagonal">対角行列の例</button>
-          <button type="button" data-preset="singular">特異行列の例</button>
-        </div>
-
         <h2>表示切替</h2>
         <div class="toggles">
           <label><input type="checkbox" id="show-cartesian-grid" checked />通常の方眼を表示</label>
@@ -56,6 +48,13 @@
           <li><span class="swatch i1"></span> 逆行列 inv_v1</li>
           <li><span class="swatch i2"></span> 逆行列 inv_v2</li>
         </ul>
+        <div class="preset-buttons">
+          <button type="button" data-preset="default">初期値に戻す</button>
+          <button type="button" data-preset="identity">単位行列にする</button>
+          <button type="button" data-preset="rotation">回転行列の例</button>
+          <button type="button" data-preset="diagonal">対角行列の例</button>
+          <button type="button" data-preset="singular">特異行列の例</button>
+        </div>
       </section>
 
       <section class="panel canvas-panel" aria-label="グラフ描画領域">
