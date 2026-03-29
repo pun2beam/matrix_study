@@ -2,7 +2,7 @@
   const EPS = 1e-9;
   const DRAG_RADIUS_PX = 14;
   const ROUND_DIGITS = 3;
-  const BASE_VECTOR_DRAW_LEN = 4;
+  const BASE_VECTOR_DRAW_LEN = 1;
 
   const canvas = document.getElementById("matrix-canvas");
   const ctx = canvas.getContext("2d");
