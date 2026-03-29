@@ -18,6 +18,7 @@
   };
 
   const toggles = {
+    autoScale: document.getElementById("auto-scale"),
     showCartesianGrid: document.getElementById("show-cartesian-grid"),
     showColumnVectors: document.getElementById("show-column-vectors"),
     showColumnVectorGrid: document.getElementById("show-column-grid"),
@@ -39,6 +40,7 @@
     matrix: { ...presets.default },
     textBuffer: { a: "2", b: "1", c: "1", d: "2" },
     ui: {
+      autoScale: true,
       showCartesianGrid: true,
       showColumnVectors: true,
       showColumnVectorGrid: true,
@@ -49,6 +51,9 @@
     },
     drag: {
       activeKey: null
+    },
+    view: {
+      manualScale: 60
     }
   };
 
@@ -248,11 +253,8 @@
     };
   }
 
-  function chooseView(computed) {
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
+  function computeAutoScale(computed, width, height) {
     const margin = 28;
-
     const points = [
       { x: state.matrix.a, y: state.matrix.c },
       { x: state.matrix.b, y: state.matrix.d }
@@ -280,11 +282,19 @@
     const safeMax = Math.min(maxAbs * 1.25 + 0.25, 25);
     const unitPixelsX = (width - margin * 2) / (2 * safeMax);
     const unitPixelsY = (height - margin * 2) / (2 * safeMax);
+    return Math.max(8, Math.min(unitPixelsX, unitPixelsY));
+  }
+
+  function chooseView(computed) {
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    const autoScale = computeAutoScale(computed, width, height);
+    const scale = state.ui.autoScale ? autoScale : Math.max(8, state.view.manualScale);
 
     return {
       width,
       height,
-      scale: Math.max(8, Math.min(unitPixelsX, unitPixelsY)),
+      scale,
       originX: width / 2,
       originY: height / 2
     };
@@ -646,6 +656,9 @@
 
     Object.entries(toggles).forEach(([key, checkbox]) => {
       checkbox.addEventListener("change", (e) => {
+        if (key === "autoScale" && !e.target.checked) {
+          state.view.manualScale = computeAutoScale(computeState(state.matrix), canvas.clientWidth, canvas.clientHeight);
+        }
         state.ui[key] = e.target.checked;
         draw();
       });
